@@ -1,4 +1,6 @@
 # Required
-python2 not python3
-Linux only
+os-system : Linux only
+
+interpreter : python2 (not python3)
+
 external library : gitpython
