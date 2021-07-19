@@ -1,96 +1,13 @@
-import subprocess, sys, json, tty, termios, os
-from git import Repo
+import sys, json
+from build_utils import conf_modi, getch, proc_cmd, pcolor, load_previous_status, program_ops
 
 dbg = False
 run_mode = False
 bg_mode = 0
 
-def proc_cmd(cmmd, debug, bg=0):
-    if debug:
-        print(cmmd)
-    else:
-        if bg=='1':
-            for idx in range(101):
-                if os.path.isfile('./build_logs/log_%d'%idx)==False:
-                    cmd = "nohup " + cmmd + " 2>&1 > ./build_logs/log_%d &"%idx
-                    subprocess.call(cmd, shell=True)
-                    break
-                elif idx == 100:
-                    print("Error : please, delite the log files in directory '/build_logs/'  ")
-                    print("Error : command '%s' was ignored.")
-                    break
-        else:
-            subprocess.call(cmmd, shell=True)
-
-def getch():
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    try:
-        tty.setraw(fd)
-        ch = sys.stdin.read(1)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    print(ch)
-    return ch
-
-def conf_modi():
-    with open('webos-local.conf') as f:
-        mems = f.readlines()
-    for lines in range(len(mems)):
-        if ('pqdb.tar' in mems[lines])&(mems[lines][0]!='#'):
-            line_mem = mems[lines].split('deploy/tar/')[0]+'deploy/tar/${MACHINE}/pqdb.tar'+mems[lines].split('pqdb.tar')[-1]
-            if line_mem != mems[lines]:
-                mems[lines] = line_mem
-                with open('webos-local.conf', 'w') as f:
-                    f.writelines(mems)
-            break
-
-class pcolor:
-    red='\033[0;31m'
-    green='\033[0;32m'
-    blue='\033[0;34m'
-    cyan='\033[0;36m'
-    gray='\033[0;37m'
-    yellow='\033[1;33m'
-    clear='\033[0m'
-
-############# loading previous status ###################
-with open('build_configure.json') as f:
-    build_stat = json.load(f)
-build_stat["checkout_branch"]= Repo(path='./').active_branch.name
-if os.path.isfile('./oe-init-build-env'):
-    with open('./oe-init-build-env') as f:
-        mems = f.readlines()
-    for lines in range(len(mems)):
-        if ('MACHINE=' in mems[lines])&(mems[lines][0]!='#'):
-            build_stat["chip"] = mems[lines].split('MACHINE="')[-1].split('"')[0]
-            break
-
-else:
-    build_stat["chip"]="None"
-with open('build_configure.json') as f:
-    build_check = json.load(f)
-if (build_stat["chip"]!=build_check["chip"]) | (build_stat["checkout_branch"]!=build_check["checkout_branch"]):
-    with open('build_configure.json', 'w') as outfile:
-        json.dump(build_stat, outfile)
-#########################################################
-branches = []
-SoC_64 = []
-with open('build_ops') as fid:
-    ops_data = fid.readlines()
-for idx in range(len(ops_data)):
-    if '## branches' in ops_data[idx]:
-        branch_sp = idx+1
-        branch_key = ops_data[idx].split('recognize key : "')[-1].split('"')[0]
-    if '## 64bit SoC' in ops_data[idx]:
-        SoC_sp = idx + 1
-        SoC_key = ops_data[idx].split('recognize key : "')[-1].split('"')[0]
-for idx in range(branch_sp,SoC_sp-1):
-    if branch_key in ops_data[idx][0]:
-        branches.append(ops_data[idx].split('\n')[0])###\r or \n need to check
-for idx in range(SoC_sp, len(ops_data)):
-    if SoC_key in ops_data[idx][0]:
-        SoC_64.append(ops_data[idx].split(SoC_key)[-1].split('\n')[0])
+## loading previous status & options
+build_stat = load_previous_status()
+branches, chip_type = program_ops(build_stat["chip"])
 
 # mode decision
 if (len(sys.argv) > 1) & (len(sys.argv) % 2 == 1):
@@ -107,13 +24,8 @@ else:
 if run_mode == False:
     sys.exit('NG1')
 
-chip_type = "out_sourcing"
-for idx in range(len(SoC_64)):
-    if SoC_64[idx] in build_stat["chip"]:
-        chip_type = "in_house"
-
 if run_mode=='build':
-    if chip_type == "in_house":
+    if chip_type == "SoC_64":
         if build_stat["make_libpqdb_tar"]:
             proc_cmd("bitbake lib32-pqdb -f -c package_sysrootdir_tar",dbg, bg_mode)
         if build_stat["compile_libpqdb"]:
@@ -367,25 +279,25 @@ elif run_mode=='env_mode':
         conf_modi()
 
 elif run_mode=='tar_mode':
-    if chip_type == "in_house":
+    if chip_type == "SoC_64":
         proc_cmd("bitbake lib32-pqdb -f -c package_sysrootdir_tar", dbg, bg_mode)
     else:
         proc_cmd("bitbake pqdb -f -c package_sysrootdir_tar", dbg, bg_mode)
 
 elif run_mode=='pqdb_mode':
-    if chip_type == "in_house":
+    if chip_type == "SoC_64":
         proc_cmd("bitbake lib32-libpqdb", dbg, bg_mode)
     else:
         proc_cmd("bitbake libpqdb", dbg, bg_mode)
 
 elif run_mode=='pqc_mode':
-    if chip_type == "in_house":
+    if chip_type == "SoC_64":
         proc_cmd("bitbake lib32-pqcontroller", dbg, bg_mode)
     else:
         proc_cmd("bitbake pqcontroller", dbg, bg_mode)
 
 elif run_mode=='epk_mode':
-    if chip_type == "in_house":
+    if chip_type == "SoC_64":
         proc_cmd("bitbake lib32-starfish-" + build_stat["build_country"] + "-" + build_stat["build-type"], dbg, bg_mode)
     else:
         proc_cmd("bitbake starfish-" + build_stat["build_country"] + "-" + build_stat["build-type"], dbg, bg_mode)
