@@ -87,10 +87,10 @@ for idx in range(len(ops_data)):
         SoC_key = ops_data[idx].split('recognize key : "')[-1].split('"')[0]
 for idx in range(branch_sp,SoC_sp-1):
     if branch_key in ops_data[idx][0]:
-        branches.append(ops_data[idx].split('\r')[0])###\r or \n need to check
+        branches.append(ops_data[idx].split('\n')[0])###\r or \n need to check
 for idx in range(SoC_sp, len(ops_data)):
     if SoC_key in ops_data[idx][0]:
-        SoC_64.append(ops_data[idx].split(SoC_key)[-1].split('\r')[0])
+        SoC_64.append(ops_data[idx].split(SoC_key)[-1].split('\n')[0])
 
 # mode decision
 if (len(sys.argv) > 1) & (len(sys.argv) % 2 == 1):
