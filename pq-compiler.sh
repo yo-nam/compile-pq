@@ -136,7 +136,7 @@ else
   if [ $debug_mode == '0' ] && [ $bg_mode == '0' ];then
     col_size=$(tput cols)
     lin_size=$(tput lines)
-    reset
+    #reset
     printf $(echo "\033[8;${lin_size};${col_size}t")
   fi
   if [[ $bg_mode == '1' ]];then
