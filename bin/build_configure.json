@@ -1,0 +1,1 @@
+{"compile_pqcontroller": true, "make_libpqdb_tar": true, "chip": "k8hp", "compile_to_epk": true, "compile_libpqdb": true, "checkout_branch": "main", "build-type": "flash", "build_country": "global"}
