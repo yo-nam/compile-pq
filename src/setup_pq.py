@@ -30,6 +30,9 @@ print "Please, Select your build-starfish directory : ",
 x = ord(getch()) # 48 = 0
 selected = file_list[x-49]
 
+print("install files........")
 for idx in range(len(Setup_file)):
     cmmd = "cp ./bin/%s ../%s/"%(Setup_file[idx],selected)
     subprocess.call(cmmd, shell=True)
+    print("file copied : %s"%Setup_file[idx])
+print("installation has been done successfully.")
