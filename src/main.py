@@ -75,7 +75,6 @@ elif run_mode=='parse':
             x=x-48
             modi_stat["checkout_branch"] = branches[x-1]
 
-        #print "Want to update your branch? (it contained git pull, defualt : no) : [y/n] ",
         print "Want to update your branch? (defualt : no) : [y/n] ",
         x = getch()
         if (x == 'y') | (x == 'Y'):
@@ -188,7 +187,7 @@ elif run_mode=='parse':
     if modi_stat["checkout_branch"]!=build_stat["checkout_branch"]:
         proc_cmd("git checkout " + modi_stat["checkout_branch"], dbg)
     if pullable:
-        proc_cmd("git pull", dbg)
+        proc_cmd("git pull --rebase", dbg)
     if (modi_stat["chip"]!=build_stat["chip"])|pullable:
         proc_cmd("./mcf -b 16 -p 16 " + modi_stat[
             "chip"] + " --premirror=file:///starfish/downloads --sstatemirror=file:///starfish/sstate-cache", dbg)
@@ -272,7 +271,7 @@ elif run_mode=='env_mode':
     if modi_stat["checkout_branch"]!=build_stat["checkout_branch"]:
         proc_cmd("git checkout " + modi_stat["checkout_branch"], dbg)
     if pullable:
-        proc_cmd("git pull", dbg)
+        proc_cmd("git pull --rebase", dbg)
     if (modi_stat["chip"]!=build_stat["chip"])|pullable:
         proc_cmd("./mcf -b 16 -p 16 " + modi_stat[
             "chip"] + " --premirror=file:///starfish/downloads --sstatemirror=file:///starfish/sstate-cache", dbg)
