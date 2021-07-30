@@ -24,6 +24,13 @@ else:
 if run_mode == False:
     sys.exit('NG1')
 
+if "chip_mode" in run_mode:
+    chip_in = run_mode.split("%")[-1]
+    run_mode = run_mode.split("%")[0]
+if "branch_mode" in run_mode:
+    branch_in = run_mode.split("%")[-1]
+    run_mode = run_mode.split("%")[0]
+
 if run_mode=='build':
     if chip_type == "SoC_64":
         if build_stat["make_libpqdb_tar"]:
@@ -276,6 +283,15 @@ elif run_mode=='env_mode':
         proc_cmd("./mcf -b 16 -p 16 " + modi_stat[
             "chip"] + " --premirror=file:///starfish/downloads --sstatemirror=file:///starfish/sstate-cache", dbg)
         conf_modi()
+
+elif run_mode=='branch_mode':
+    if branch_in != build_stat["checkout_branch"]:
+        proc_cmd("git checkout " + branch_in, dbg)
+        proc_cmd("git pull --rebase", dbg)
+
+elif run_mode=='chip_mode':
+    if chip_in != build_stat["chip"]:
+        proc_cmd("./mcf -b 16 -p 16 " + chip_in + " --premirror=file:///starfish/downloads --sstatemirror=file:///starfish/sstate-cache", dbg)
 
 elif run_mode=='tar_mode':
     if chip_type == "SoC_64":
