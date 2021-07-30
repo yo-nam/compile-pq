@@ -23,7 +23,6 @@ else
     run_mode=1
   fi
 
-
   if [[ $run_mode == '0' ]]; then
     STAT_BUILD=$(python build_exec -m checker 2>&1) && echo ' '
     if [[ $STAT_BUILD == "NG1" ]]; then
@@ -38,7 +37,7 @@ else
       source oe-init-build-env && echo ' '
       python build_exec -m build -d $debug_mode -b $bg_mode && echo ' '
     fi
-  elif [[ $run_mode == '2']]; then
+  elif [[ $run_mode == '2' ]]; then
     echo 'bb_file has been updated'
   else
     if [[ $env_mode == 1 ]];then
