@@ -16,6 +16,7 @@ else
 
   if [[ $bb_cpy == 1 ]]; then
     cp ../libpqdb/bb_file/pqdb.bb ./meta-lg-webos/meta-starfish/recipes-starfish/pqdb/
+    run_mode=1
   fi
 
   if [ $env_mode == 1 ] || [ $tar_mode == 1 ] || [ $epk_mode == 1 ] || [ $pqc_mode == 1 ] || [ $pqdb_mode == 1 ];then
