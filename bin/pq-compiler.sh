@@ -16,7 +16,7 @@ else
 
   if [[ $bb_cpy == 1 ]]; then
     cp ../libpqdb/bb_file/pqdb.bb ./meta-lg-webos/meta-starfish/recipes-starfish/pqdb/
-    run_mode=1
+    run_mode=2
   fi
 
   if [ $env_mode == 1 ] || [ $tar_mode == 1 ] || [ $epk_mode == 1 ] || [ $pqc_mode == 1 ] || [ $pqdb_mode == 1 ];then
@@ -38,6 +38,8 @@ else
       source oe-init-build-env && echo ' '
       python build_exec -m build -d $debug_mode -b $bg_mode && echo ' '
     fi
+  elif [[ $run_mode == '2']]; then
+    echo 'bb_file has been updated'
   else
     if [[ $env_mode == 1 ]];then
       python build_exec -m env_mode -d $debug_mode && echo ' '
