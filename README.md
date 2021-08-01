@@ -11,9 +11,9 @@ input command on terminal as followed:
  >#### ../compile-pq$   ./setup_pq.sh
 
 # Useage
-## Basic : excute "pq-compiler.sh"
+## Basic : Excute shell script
     ex) ../build-starfish$ ./pq-compiler.sh
-## Fast : add options "pq-compiler.sh opt1 opt2 ..."
+## Fast : Add options
     ex) ../build-starfish$ ./pq-compiler.sh opts1 opts2 opts3....
     maxium number of options : 5
 
