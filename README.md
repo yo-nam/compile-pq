@@ -8,6 +8,22 @@ external library : gitpython
 # Setup
 
 input command on terminal as followed:
- >#### $   ./setup_pq.sh
+ >#### ../compile-pq$   ./setup_pq.sh
 
- 
+# Useage
+## Basic : excute "pq-compiler.sh"
+    ex) ../build-starfish$ ./pq-compiler.sh
+## Fast : add options "pq-compiler.sh opt1 opt2 ..."
+    ex) ../build-starfish$ ./pq-compiler.sh opts1 opts2 opts3....
+    maxium number of options : 5
+
+    #options     #description   
+    dbg          debug mode (just print cmds, not exectable)
+    epk          make epk image with previous options.
+    tar          make tar file with previous options.
+    pqdb         compile libpqdb
+    pqc          compile pqcontroller
+    env          settings for several build options.
+    bb           update the latest bb file (updated, 7/29)
+    .chip        change chip option (updated, 7/29)
+    @branch      change branch option (updated, 7/29)
