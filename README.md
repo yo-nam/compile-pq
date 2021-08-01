@@ -18,7 +18,7 @@ input command on terminal as followed:
 >       maxium number of options : 5
 > 
 >       #options     #description   
->       dbg          debug mode (just print cmds, not exectable)
+>       dbg          debug mode (just print cmds)
 >       epk          make epk image with previous options.
 >       tar          make tar file with previous options.
 >       pqdb         compile libpqdb
