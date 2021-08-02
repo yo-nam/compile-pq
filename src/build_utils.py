@@ -89,7 +89,7 @@ def program_ops(chip):
     return branches, chip_type
 
 def kill_PIDs():
-    pipe = subprocess.Popen("pwd", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    pipe = subprocess.Popen("pwd", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
     user_name = pipe.stdout.read()
     user_name = user_name.split("users/")[-1].split('/')[0]
     print(user_name)
