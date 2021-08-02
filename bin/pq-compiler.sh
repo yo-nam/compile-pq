@@ -81,10 +81,13 @@ else
       python build_exec -m del_epks -d $debug_mode -b $bg_mode && echo ' '
     fi
   fi
+  if [ $bg_mode == 0 ]; then
+    python build_exec -m kill -d $debug_mode -b $bg_mode && echo ' '
+  fi
   if [ $debug_mode == 0 ] && [ $bg_mode == 0 ];then
     col_size=$(tput cols)
     lin_size=$(tput lines)
-    #reset
+    reset
     printf $(echo "\033[8;${lin_size};${col_size}t")
   fi
   if [[ $bg_mode == 1 ]];then
@@ -92,7 +95,5 @@ else
     echo "you can control your processes using followd commands"
     echo -e "\033[0;31m ps aux | grep user_name \033[0m : check PID number of your tasks"
     echo -e "\033[0;31m kill -9 PID_number \033[0m : kill your task"
-  else
-    python build_exec -m kill -d $debug_mode -b $bg_mode && echo ' '
   fi
 fi

@@ -346,7 +346,8 @@ elif run_mode=='checker':
 
 elif run_mode=='kill':
     PIDs=kill_PIDs()
-    proc_cmd("kill %s"%PIDs, dbg, bg_mode)
+    if PIDs != "":
+        proc_cmd("kill %s"%PIDs, dbg, bg_mode)
 
 else :
     print('NG3')
