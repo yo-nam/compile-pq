@@ -27,3 +27,4 @@ input command on terminal as followed:
 >       bb           update the latest bb file (updated, 7/29)
 >       .chip        change chip option (updated, 7/29)
 >       @branch      change branch option (updated, 7/29)
+>       del          delete epks except the latest image (updated, 8/1)
