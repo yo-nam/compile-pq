@@ -92,5 +92,7 @@ else
     echo "you can control your processes using followd commands"
     echo -e "\033[0;31m ps aux | grep user_name \033[0m : check PID number of your tasks"
     echo -e "\033[0;31m kill -9 PID_number \033[0m : kill your task"
+  else
+    python build_exec -m kill -d $debug_mode -b $bg_mode && echo ' '
   fi
 fi

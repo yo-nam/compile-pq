@@ -88,6 +88,38 @@ def program_ops(chip):
             chip_type = "SoC_64"
     return branches, chip_type
 
+def kill_PIDs():
+    pipe = subprocess.Popen("pwd", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    user_name = pipe.stdout.read()
+    user_name = user_name.split("users/")[-1].split('/')[0]
+    pipe = subprocess.Popen("ps aux | grep %s | grep bitbake" % user_name, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    Process_log = pipe.stdout.read().split('\n')
+
+    num_f = []
+    PIDs = []
+    for P_idx in range(len(Process_log)):
+        flag = 0
+        prev = False
+        if len(Process_log[P_idx]) > 0:
+            num_f.append([])
+            for idx in range(len(Process_log[P_idx])):
+                curr = Process_log[P_idx][idx] == " "
+                if prev != curr:
+                    flag += 1
+                    prev = curr
+                if flag == 2:
+                    num_f[P_idx].append(Process_log[P_idx][idx])
+            pid = 0
+            for idx in range(len(num_f[P_idx])):
+                pid += (int(num_f[P_idx][len(num_f[P_idx]) - idx - 1]) * 10 ** idx)
+            PIDs.append(pid)
+    pids = ""
+    for idx in range(len(PIDs)):
+        pids += str(PIDs[idx]) + " "
+    print(user_name, pids)
+    return pids
+
 class pcolor:
     red='\033[0;31m'
     green='\033[0;32m'

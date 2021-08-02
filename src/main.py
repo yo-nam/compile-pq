@@ -1,5 +1,5 @@
 import sys, json, glob
-from build_utils import conf_modi, getch, proc_cmd, pcolor, load_previous_status, program_ops
+from build_utils import conf_modi, getch, proc_cmd, pcolor, load_previous_status, program_ops, kill_PIDs
 
 dbg = False
 run_mode = False
@@ -343,5 +343,10 @@ elif run_mode=='checker':
 
     if run_mode == False:
         sys.exit('NG1')
+
+elif run_mode=='kill':
+    PIDs=kill_PIDs()
+    proc_cmd("kill %s"%PIDs, dbg, bg_mode)
+
 else :
     print('NG3')
