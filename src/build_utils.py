@@ -92,8 +92,9 @@ def kill_PIDs():
     pipe = subprocess.Popen("pwd", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     user_name = pipe.stdout.read()
     user_name = user_name.split("users/")[-1].split('/')[0]
+    print(user_name)
     pipe = subprocess.Popen("ps aux | grep %s | grep bitbake" % user_name, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
+                            stderr=subprocess.PIPE, shell=True)
     Process_log = pipe.stdout.read().split('\n')
 
     num_f = []
