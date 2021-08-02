@@ -92,7 +92,6 @@ def kill_PIDs():
     pipe = subprocess.Popen("pwd", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
     user_name = pipe.stdout.read()
     user_name = user_name.split("users/")[-1].split('/')[0]
-    print(user_name)
     pipe = subprocess.Popen("ps aux | grep %s | grep bitbake" % user_name, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, shell=True)
     Process_log = pipe.stdout.read().split('\n')
@@ -103,18 +102,19 @@ def kill_PIDs():
         flag = 0
         prev = False
         if len(Process_log[P_idx]) > 0:
-            num_f.append([])
-            for idx in range(len(Process_log[P_idx])):
-                curr = Process_log[P_idx][idx] == " "
-                if prev != curr:
-                    flag += 1
-                    prev = curr
-                if flag == 2:
-                    num_f[P_idx].append(Process_log[P_idx][idx])
-            pid = 0
-            for idx in range(len(num_f[P_idx])):
-                pid += (int(num_f[P_idx][len(num_f[P_idx]) - idx - 1]) * 10 ** idx)
-            PIDs.append(pid)
+            if "ps aux | grep" not in Process_log[P_idx]:
+                num_f.append([])
+                for idx in range(len(Process_log[P_idx])):
+                    curr = Process_log[P_idx][idx] == " "
+                    if prev != curr:
+                        flag += 1
+                        prev = curr
+                    if flag == 2:
+                        num_f[P_idx].append(Process_log[P_idx][idx])
+                pid = 0
+                for idx in range(len(num_f[P_idx])):
+                    pid += (int(num_f[P_idx][len(num_f[P_idx]) - idx - 1]) * 10 ** idx)
+                PIDs.append(pid)
     pids = ""
     for idx in range(len(PIDs)):
         pids += str(PIDs[idx]) + " "
