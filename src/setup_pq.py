@@ -12,13 +12,13 @@ def getch():
     return ch
 # setup file list
 Setup_file=[]
-Setup_file.append("build_configure.json")
 Setup_file.append("build_exec")
-Setup_file.append("build_ops")
 Setup_file.append("parse_opts")
 Setup_file.append("build_utils.pyc")
 Setup_file.append("pq-compiler.sh")
-
+Setup_opt=[]
+Setup_opt.append("build_ops")
+Setup_opt.append("build_configure.json")
 file_list = os.listdir('../')
 for idx in range(len(file_list)):
     if idx == len(file_list)-1 :
@@ -36,4 +36,9 @@ for idx in range(len(Setup_file)):
     cmmd = "cp ./bin/%s ../%s/"%(Setup_file[idx],selected)
     subprocess.call(cmmd, shell=True)
     print("file copied : %s"%Setup_file[idx])
+for idx in range(len(Setup_opt)):
+    if os.path.exists("../%s/%s"%(selected,Setup_opt[idx]))==False:
+        cmmd = "cp ./bin/%s ../%s/"%(Setup_file[idx],selected)
+        subprocess.call(cmmd, shell=True)
+        print("file copied : %s"%Setup_file[idx])
 print("installation has been done successfully.")

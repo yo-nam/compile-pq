@@ -322,7 +322,7 @@ elif run_mode=='del_epks':
     for idx in range(len(dirs)):
         if len(dirs[idx].split('images/')[-1]) < 6:
             epk_paths = glob.glob('%s/*' % dirs[idx])
-            print(pcolor.yellow+"%s epks is deleting...%s"%(dirs[idx].split('images/')[-1],pcolor.clear))
+            print(pcolor.yellow+"%s epks are deleting now...%s"%(dirs[idx].split('images/')[-1],pcolor.clear))
             for epk_idx in range(len(epk_paths)):
                 if '20' in epk_paths[epk_idx]:
                     cmd = 'rm -rf %s' % epk_paths[epk_idx]
