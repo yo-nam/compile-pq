@@ -15,6 +15,7 @@ else
   bb_cpy=$(python parse_opts "bb" $1 $2 $3 $4 $5 2>&1) && echo ' '
   chip_mode=$(python parse_opts "." $1 $2 $3 $4 $5 2>&1) && echo ' '
   branch_mode=$(python parse_opts "@" $1 $2 $3 $4 $5 2>&1) && echo ' '
+  del_mode=$(python parse_opts "del" $1 $2 $3 $4 $5 2>&1) && echo ' '
   if [ $chip_mode == 1 ]; then
     chip_in=$(python parse_opts "chip_mode" $1 $2 $3 $4 $5 2>&1) && echo ' '
   fi
@@ -22,9 +23,8 @@ else
     branch_in=$(python parse_opts "branch_mode" $1 $2 $3 $4 $5 2>&1) && echo ' '
   fi
 
-  if [[ $bb_cpy == 1 ]]; then
-    cp ../libpqdb/bb_file/pqdb.bb ./meta-lg-webos/meta-starfish/recipes-starfish/pqdb/
-    run_mode=2
+  if [[ $bb_cpy == 1 ]] || [ $del_mode == 1 ] ; then
+    run_mode=1
   fi
 
   if [ $env_mode == 1 ] || [ $tar_mode == 1 ] || [ $epk_mode == 1 ] || [ $pqc_mode == 1 ] || [ $pqdb_mode == 1 ] || [ $chip_mode == 1 ] || [ $branch_mode == 1 ];then
@@ -45,9 +45,11 @@ else
       source oe-init-build-env && echo ' '
       python build_exec -m build -d $debug_mode -b $bg_mode && echo ' '
     fi
-  elif [[ $run_mode == '2' ]]; then
-    echo 'bb_file has been updated'
   else
+    if [ $bb_cpy == 1 ]; then
+      cp ../libpqdb/bb_file/pqdb.bb ./meta-lg-webos/meta-starfish/recipes-starfish/pqdb/
+      echo 'bb_file has been updated'
+    fi
     if [ $env_mode == 1 ] && ([ $chip_mode == 1 ] || [ $branch_mode == 1 ]);then
       echo "env_mode can't use with chip or branch selection."
     else
@@ -74,6 +76,9 @@ else
     fi
     if [[ $epk_mode == 1 ]];then
       python build_exec -m epk_mode -d $debug_mode -b $bg_mode && echo ' '
+    fi
+    if [ $del_mode == 1 ]; then
+      python build_exec -m del_epks -d $debug_mode -b $bg_mode && echo ' '
     fi
   fi
   if [ $debug_mode == 0 ] && [ $bg_mode == 0 ];then

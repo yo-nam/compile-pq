@@ -1,4 +1,4 @@
-import sys, json
+import sys, json, glob
 from build_utils import conf_modi, getch, proc_cmd, pcolor, load_previous_status, program_ops
 
 dbg = False
@@ -316,6 +316,17 @@ elif run_mode=='epk_mode':
         proc_cmd("bitbake lib32-starfish-" + build_stat["build_country"] + "-" + build_stat["build-type"], dbg, bg_mode)
     else:
         proc_cmd("bitbake starfish-" + build_stat["build_country"] + "-" + build_stat["build-type"], dbg, bg_mode)
+
+elif run_mode=='del_epks':
+    dirs = glob.glob('./BUILD/deploy/images/*')
+    for idx in range(len(dirs)):
+        if len(dirs[idx].split('images/')[-1]) < 6:
+            epk_paths = glob.glob('%s/*' % dirs[idx])
+            for epk_idx in range(len(epk_paths)):
+                if '20' in epk_paths[epk_idx]:
+                    cmd = 'rm -rf %s' % epk_paths[epk_idx]
+                    proc_cmd(cmd,dbg, bg_mode)
+                    print('%s was terminated.'%epk_paths[epk_idx].split(dirs[idx])[-1])
 
 elif run_mode=='checker':
     # mode decision
