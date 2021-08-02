@@ -118,7 +118,6 @@ def kill_PIDs():
     pids = ""
     for idx in range(len(PIDs)):
         pids += str(PIDs[idx]) + " "
-    print(user_name, pids)
     return pids
 
 class pcolor:
