@@ -40,5 +40,5 @@ for idx in range(len(Setup_opt)):
     if os.path.exists("../%s/%s"%(selected,Setup_opt[idx]))==False:
         cmmd = "cp ./bin/%s ../%s/"%(Setup_opt[idx],selected)
         subprocess.call(cmmd, shell=True)
-        print("file copied : %s"%Setup_file[idx])
+        print("file copied : %s"%Setup_opt[idx])
 print("installation has been done successfully.")
