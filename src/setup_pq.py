@@ -25,7 +25,7 @@ for idx in range(len(file_list)):
         print "[%d : %s]\n"%(idx+1,file_list[idx]),
     else:
         print "[%d : %s],\t" % (idx + 1, file_list[idx]),
-    if idx%4==3:
+    if idx%4==2:
         print "\n",
 print "Please, Select your build-starfish directory : ",
 x = ord(getch()) # 48 = 0

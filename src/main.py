@@ -1,5 +1,5 @@
 import sys, json, glob
-from build_utils import conf_modi, getch, proc_cmd, pcolor, load_previous_status, program_ops, kill_PIDs
+from build_utils import conf_modi, getch, proc_cmd, pcolor, load_previous_status, program_ops, kill_PIDs, QnA
 
 dbg = False
 run_mode = False
@@ -63,9 +63,12 @@ elif run_mode=='parse':
     print("------------------------- Build env. ----------------------------")
     print(" Checkout branch : %s\n Selected chip : %s " % (build_stat["checkout_branch"], build_stat["chip"]))
     print("#################################################################")
-    print "\nWant to change environments? : [y/n] ",
-    diff_dec = getch()
-    if (diff_dec == 'y')|(diff_dec == 'Y')|(ord(diff_dec) == 13):
+
+    Q  = "\nWant to change environments? : [y/n] "
+    err_msg = ":::Warning : Wrong input, it will execute as-like last time."
+    neg_msg = "It will execute as-like last time."
+    diff_dec = QnA(Q,err_msg,neg_msg)
+    if diff_dec:
         printable = True
         print "Select your branch (defualt : %s) \n ["%build_stat["checkout_branch"],
         for branch_idx in range(len(branches)):
@@ -90,10 +93,6 @@ elif run_mode=='parse':
         if x == '':
             x = build_stat["chip"]
         modi_stat["chip"] = x
-    elif (diff_dec =='n')|(diff_dec =='N'):
-        print("It will execute as-like last time.")
-    else:
-        print(":::Warning : Wrong input, it will execute as-like last time.")
 
     print("\n#################################################################")
     print("--------------------- Output options ----------------------------")
@@ -103,80 +102,39 @@ elif run_mode=='parse':
             build_stat["compile_to_epk"], build_stat["build_country"], build_stat["build-type"]))
     print("#################################################################")
 
-    print "\nIs there any different options? [y/n] ",
-    diff_dec = getch()
-    if (diff_dec == 'y') | (diff_dec == 'Y') | (ord(diff_dec) == 13):
-        ######################################
+    Q  = "\nIs there any different options? [y/n] "
+    err_msg = ":::Warning : Wrong input, it will execute as-like last time."
+    neg_msg = "It will execute as-like last time."
+    diff_dec = QnA(Q,err_msg,neg_msg)
+    if diff_dec:
         printable = True
-        print "Want to make libpqdb tar file? (default : yes) : [y/n] ",
-        x = getch()
-        if (x == 'y') | (x == 'Y') | (ord(x) == 13):
-            modi_stat["make_libpqdb_tar"] = True
-        elif (x == 'n') | (x == 'N'):
-            modi_stat["make_libpqdb_tar"] = False
-        else:
-            modi_stat["make_libpqdb_tar"] = True
-            print(":::Warning : Wrong input, libpqdb tar file will be made.")
+        Q = "Want to make libpqdb tar file? (default : yes) : [y/n] "
+        err_msg = ":::Warning : Wrong input, it won't make libpqdb tar file."
+        modi_stat["make_libpqdb_tar"] = QnA(Q, err_msg)
 
-        print "Want to compile libpqdb? (default : no) : [y/n] ",
-        x = getch()
-        if (x == 'y') | (x == 'Y'):
-            modi_stat["compile_libpqdb"] = True
-        elif (x == 'n') | (x == 'N') | (ord(x) == 13):
-            modi_stat["compile_libpqdb"] = False
-        else:
-            modi_stat["compile_libpqdb"] = False
-            print(":::Warning : Wrong input, libpqdb won't be compiled")
+        Q = "Want to compile libpqdb? (default : no) : [y/n] "
+        err_msg = ":::Warning : Wrong input, libpqdb won't be compiled"
+        modi_stat["compile_libpqdb"] = QnA(Q, err_msg)
 
-        print "Want to compile pqcontroller? (default : no) : [y/n] ",
-        x = getch()
-        if (x == 'y') | (x == 'Y'):
-            modi_stat["compile_pqcontroller"] = True
-        elif (x == 'n') | (x == 'N') | (ord(x) == 13):
-            modi_stat["compile_pqcontroller"] = False
-        else:
-            modi_stat["compile_pqcontroller"] = False
-            print(":::Warning : Wrong input, pqcontroller won't be compiled")
+        Q = "Want to compile pqcontroller? (default : no) : [y/n] "
+        err_msg = ":::Warning : Wrong input, pqcontroller won't be compiled"
+        modi_stat["compile_pqcontroller"] = QnA(Q, err_msg)
 
-        print "Want to compile for epk image file? (default : yes) : [y/n] ",
-        x = getch()
-        if (x == 'y') | (x == 'Y') | (ord(x) == 13):
-            modi_stat["compile_to_epk"] = True
+        Q = "Want to compile for epk image file? (default : yes) : [y/n] "
+        err_msg = ":::Warning : Wrong input, it won't make epk image."
+        modi_stat["compile_to_epk"] = QnA(Q,err_msg)
 
-            print "Input the build type (default : flash)\n[1:flash, 2:flash-devel, 3:secured, 4:nfs, 5:nfs-devel] : ",
-            x = getch()
-            if (ord(x) == 13) | (x == '1'):
-                modi_stat["build-type"] = 'flash'
-            elif x == '2':
-                modi_stat["build-type"] = 'flash-devel'
-            elif x == '3':
-                modi_stat["build-type"] = 'secured'
-            elif x == '4':
-                modi_stat["build-type"] = 'nfs'
-            elif x == '5':
-                modi_stat["build-type"] = 'nfs-devel'
-            else:
-                modi_stat["build-type"] = 'flash'
-                print(":::Warning : Wrong input, built type set to flash")
+        if modi_stat["compile_to_epk"]:
+            args = ['flash', 'flash-devel', 'secured', 'nfs', 'nfs-devel']
+            Q = "Input the build type (default : "+args[0]+")\n[1:"+args[0]+", 2:"+args[1]+\
+                ", 3:"+args[2]+", 4:"+args[3]+", 5:"+args[4]+"] : "
+            err = ":::Warning : Wrong input, built type set to flash"
+            modi_stat["build-type"] = QnA(Q, err, selective=True, args=args)
 
-            print "Select country (default : global) [1:global, 2:japan] : ",
-            x = getch()
-            if (ord(x) == 13) | (x == '1'):
-                modi_stat["build_country"] = 'global'
-            elif x == '2':
-                modi_stat["build_country"] = 'arib'
-            else:
-                print(":::Warning : Wrong input, built country set to global")
-                modi_stat["build_country"] = 'global'
-        elif (x == 'n') | (x == 'N'):
-            modi_stat["compile_to_epk"] = False
-        else:
-            modi_stat["compile_to_epk"] = False
-            print(":::Warning : Wrong input, it won't make epk image.")
-    elif (diff_dec =='n')|(diff_dec =='N'):
-        print("It will execute as-like last time.")
-    else:
-        print(":::Warning : Wrong input, it will execute as-like last time.")
+            args = ['global', 'arib']
+            Q = "Select country (default : "+args[0]+") [1:"+args[0]+", 2:"+args[1]+"] : "
+            err = ":::Warning : Wrong input, built country set to global"
+            modi_stat["build_country"] = QnA(Q, err, selective=True, args=args)
 
     with open('build_configure.json', 'w') as outfile:
         json.dump(modi_stat, outfile)
@@ -203,16 +161,19 @@ elif run_mode=='parse':
 elif run_mode=='env_mode':
     with open('build_configure.json') as f:
         modi_stat = json.load(f)
+    pullable = False
     print(
         "\n\n#################################################################\n                   webOS PQ-Compiler v0.1             by PQ-Team")
     print("------------------------- Build env. ----------------------------")
     print(" Checkout branch : %s\n Selected chip : %s" % (build_stat["checkout_branch"], build_stat["chip"]))
     print(" Build country : %s\n Build-type : %s" % (build_stat["build_country"], build_stat["build-type"]))
     print("#################################################################")
-    pullable = False
-    print "\nWant to change environments? : [y/n] ",
-    diff_dec = getch()
-    if (diff_dec == 'y')|(diff_dec == 'Y')|(ord(diff_dec) == 13):
+
+    Q = "\nWant to change environments? : [y/n] "
+    err_msg = ":::Warning : Wrong input, it will execute as-like last time."
+    neg_msg = "It will execute as-like last time."
+    diff_dec = QnA(Q, err_msg, neg_msg)
+    if diff_dec:
         print "Select your branch (defualt : %s) \n [" % build_stat["checkout_branch"],
         for branch_idx in range(len(branches)):
             if branch_idx == (len(branches) - 1):
@@ -236,31 +197,15 @@ elif run_mode=='env_mode':
         if x == '':
             x = build_stat["chip"]
         modi_stat["chip"] = x
-        print "Input the build type (default : flash)\n[1:flash, 2:flash-devel, 3:secured, 4:nfs, 5:nfs-devel] : ",
-        x = getch()
-        if (ord(x) == 13) | (x == '1'):
-            modi_stat["build-type"] = 'flash'
-        elif x == '2':
-            modi_stat["build-type"] = 'flash-devel'
-        elif x == '3':
-            modi_stat["build-type"] = 'secured'
-        elif x == '4':
-            modi_stat["build-type"] = 'nfs'
-        elif x == '5':
-            modi_stat["build-type"] = 'nfs-devel'
-        else:
-            modi_stat["build-type"] = 'flash'
-            print(":::Warning : Wrong input, built type set to flash")
-
-        print "Select country (default : global) [1:global, 2:japan] : ",
-        x = getch()
-        if (ord(x) == 13) | (x == '1'):
-            modi_stat["build_country"] = 'global'
-        elif x == '2':
-            modi_stat["build_country"] = 'arib'
-        else:
-            print(":::Warning : Wrong input, built country set to global")
-            modi_stat["build_country"] = 'global'
+        args = ['flash', 'flash-devel', 'secured', 'nfs', 'nfs-devel']
+        Q = "Input the build type (default : " + args[0] + ")\n[1:" + args[0] + ", 2:" + args[1] + \
+            ", 3:" + args[2] + ", 4:" + args[3] + ", 5:" + args[4] + "] : "
+        err = ":::Warning : Wrong input, built type set to flash"
+        modi_stat["build-type"] = QnA(Q, err, selective=True, args=args)
+        args = ['global', 'arib']
+        Q = "Select country (default : " + args[0] + ") [1:" + args[0] + ", 2:" + args[1] + "] : "
+        err = ":::Warning : Wrong input, built country set to global"
+        modi_stat["build_country"] = QnA(Q, err, selective=True, args=args)
         print("\n################ Your Options are as followed ###################")
         print("------------------------- Build env. ----------------------------")
         print(" Checkout branch : %s\n Selected chip : %s\n Git pull : %s" % (
@@ -270,10 +215,6 @@ elif run_mode=='env_mode':
         print("#################################################################")
         with open('build_configure.json', 'w') as outfile:
             json.dump(modi_stat, outfile)
-    elif (diff_dec =='n')|(diff_dec =='N'):
-        print("It will execute as-like last time.")
-    else:
-        print(":::Warning : Wrong input, it will execute as-like last time.")
 
     if modi_stat["checkout_branch"]!=build_stat["checkout_branch"]:
         proc_cmd("git checkout " + modi_stat["checkout_branch"], dbg)

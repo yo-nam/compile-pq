@@ -120,6 +120,32 @@ def kill_PIDs():
         pids += str(PIDs[idx]) + " "
     return pids
 
+def QnA(Q, err, err2="", selective=False, args=[]):
+    print Q,
+    x = getch()
+    if selective:
+        selected = 0
+        msg_able=True
+        x = ord(x) == 13 and '1' or x
+        for idx in range(len(args)):
+            if str(idx + 1) == x:
+                selected = idx
+                msg_able=False
+        answer = args[selected]
+        if msg_able:
+            print(err)
+    else: #yes or no
+        if (x == 'y') | (x == 'Y') | (ord(x) == 13):
+            answer = True
+        elif (x == 'n') | (x == 'N'):
+            answer = False
+            if err2!="":
+                print(err2)
+        else:
+            answer = False
+            print(err)
+    return answer
+
 class pcolor:
     red='\033[0;31m'
     green='\033[0;32m'
