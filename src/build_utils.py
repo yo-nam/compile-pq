@@ -1,6 +1,15 @@
 import os, subprocess, sys, tty, termios, json
 from git import Repo
 
+class pcolor:
+    red='\033[0;31m'
+    green='\033[0;32m'
+    blue='\033[0;34m'
+    cyan='\033[0;36m'
+    gray='\033[0;37m'
+    yellow='\033[1;33m'
+    clear='\033[0m'
+
 # getting command
 def getch():
     fd = sys.stdin.fileno()
@@ -133,7 +142,7 @@ def QnA(Q, err, err2="", selective=False, args=[]):
                 msg_able=False
         answer = args[selected]
         if msg_able:
-            print(err)
+            print(pcolor.yellow+err+pcolor.clear)
     else: #yes or no
         if (x == 'y') | (x == 'Y') | (ord(x) == 13):
             answer = True
@@ -143,14 +152,5 @@ def QnA(Q, err, err2="", selective=False, args=[]):
                 print(err2)
         else:
             answer = False
-            print(err)
+            print(pcolor.yellow+err+pcolor.clear)
     return answer
-
-class pcolor:
-    red='\033[0;31m'
-    green='\033[0;32m'
-    blue='\033[0;34m'
-    cyan='\033[0;36m'
-    gray='\033[0;37m'
-    yellow='\033[1;33m'
-    clear='\033[0m'
