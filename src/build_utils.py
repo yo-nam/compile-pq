@@ -1,6 +1,15 @@
 import os, subprocess, sys, tty, termios, json
 from git import Repo
 
+class pcolor:
+    red='\033[0;31m'
+    green='\033[0;32m'
+    blue='\033[0;34m'
+    cyan='\033[0;36m'
+    gray='\033[0;37m'
+    yellow='\033[1;33m'
+    clear='\033[0m'
+
 # getting command
 def getch():
     fd = sys.stdin.fileno()
@@ -88,11 +97,60 @@ def program_ops(chip):
             chip_type = "SoC_64"
     return branches, chip_type
 
-class pcolor:
-    red='\033[0;31m'
-    green='\033[0;32m'
-    blue='\033[0;34m'
-    cyan='\033[0;36m'
-    gray='\033[0;37m'
-    yellow='\033[1;33m'
-    clear='\033[0m'
+def kill_PIDs():
+    pipe = subprocess.Popen("pwd", stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell=True)
+    user_name = pipe.stdout.read()
+    user_name = user_name.split("users/")[-1].split('/')[0]
+    pipe = subprocess.Popen("ps aux | grep %s | grep bitbake" % user_name, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE, shell=True)
+    Process_log = pipe.stdout.read().split('\n')
+
+    num_f = []
+    PIDs = []
+    for P_idx in range(len(Process_log)):
+        flag = 0
+        prev = False
+        if len(Process_log[P_idx]) > 0:
+            if "ps aux | grep" not in Process_log[P_idx]:
+                num_f.append([])
+                for idx in range(len(Process_log[P_idx])):
+                    curr = Process_log[P_idx][idx] == " "
+                    if prev != curr:
+                        flag += 1
+                        prev = curr
+                    if flag == 2:
+                        num_f[P_idx].append(Process_log[P_idx][idx])
+                pid = 0
+                for idx in range(len(num_f[P_idx])):
+                    pid += (int(num_f[P_idx][len(num_f[P_idx]) - idx - 1]) * 10 ** idx)
+                PIDs.append(pid)
+    pids = ""
+    for idx in range(len(PIDs)):
+        pids += str(PIDs[idx]) + " "
+    return pids
+
+def QnA(Q, err, err2="", selective=False, args=[]):
+    print Q,
+    x = getch()
+    if selective:
+        selected = 0
+        msg_able=True
+        x = ord(x) == 13 and '1' or x
+        for idx in range(len(args)):
+            if str(idx + 1) == x:
+                selected = idx
+                msg_able=False
+        answer = args[selected]
+        if msg_able:
+            print(pcolor.yellow+err+pcolor.clear)
+    else: #yes or no
+        if (x == 'y') | (x == 'Y') | (ord(x) == 13):
+            answer = True
+        elif (x == 'n') | (x == 'N'):
+            answer = False
+            if err2!="":
+                print(err2)
+        else:
+            answer = False
+            print(pcolor.yellow+err+pcolor.clear)
+    return answer
