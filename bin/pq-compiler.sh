@@ -1,34 +1,35 @@
-argc=$#
 run_mode=0
 
-if [[ $argc > 5 ]]; then
-  echo "please, enter less than 6 options. this program only allows 5 options"
+if [[ $# -gt 10 ]]; then
+  echo "please, enter less than 10 options. this program only allows 10 options"
 else
-  bg_mode=$(python parse_opts "bg" $1 $2 $3 $4 $5 2>&1) && echo ' '
-  env_mode=$(python parse_opts "env" $1 $2 $3 $4 $5 2>&1) && echo ' '
-  debug_mode=$(python parse_opts "debug" $1 $2 $3 $4 $5 2>&1) && echo ' '
-  debug_mode=$(python parse_opts "dbg" $1 $2 $3 $4 $5 2>&1) && echo ' '
-  epk_mode=$(python parse_opts "epk" $1 $2 $3 $4 $5 2>&1) && echo ' '
-  tar_mode=$(python parse_opts "tar" $1 $2 $3 $4 $5 2>&1) && echo ' '
-  pqc_mode=$(python parse_opts "pqc" $1 $2 $3 $4 $5 2>&1) && echo ' '
-  pqdb_mode=$(python parse_opts "pqdb" $1 $2 $3 $4 $5 2>&1) && echo ' '
-  bb_cpy=$(python parse_opts "bb" $1 $2 $3 $4 $5 2>&1) && echo ' '
-  chip_mode=$(python parse_opts "." $1 $2 $3 $4 $5 2>&1) && echo ' '
-  branch_mode=$(python parse_opts "@" $1 $2 $3 $4 $5 2>&1) && echo ' '
-  del_mode=$(python parse_opts "del" $1 $2 $3 $4 $5 2>&1) && echo ' '
+  arg_in="$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}"
+  bg_mode=$(python parse_opts "bg" $arg_in 2>&1) && echo ' '
+  env_mode=$(python parse_opts "env" $arg_in 2>&1) && echo ' '
+  debug_mode=$(python parse_opts "debug" $arg_in 2>&1) && echo ' '
+  epk_mode=$(python parse_opts "epk" $arg_in 2>&1) && echo ' '
+  tar_mode=$(python parse_opts "tar" $arg_in 2>&1) && echo ' '
+  pqc_mode=$(python parse_opts "pqc" $arg_in 2>&1) && echo ' '
+  pqdb_mode=$(python parse_opts "pqdb" $arg_in 2>&1) && echo ' '
+  bb_cpy=$(python parse_opts "bb" $arg_in 2>&1) && echo ' '
+  chip_mode=$(python parse_opts "." $arg_in 2>&1) && echo ' '
+  branch_mode=$(python parse_opts "@" $arg_in 2>&1) && echo ' '
+  del_mode=$(python parse_opts "del" $arg_in 2>&1) && echo ' '
+  multi_soc=$(python parse_opts "multi" $arg_in 2>&1) && echo ' '
   if [ $chip_mode == 1 ]; then
-    chip_in=$(python parse_opts "chip_mode" $1 $2 $3 $4 $5 2>&1) && echo ' '
+    chip_in=$(python parse_opts "chip_mode" $arg_in 2>&1) && echo ' '
   fi
   if [ $branch_mode == 1 ]; then
-    branch_in=$(python parse_opts "branch_mode" $1 $2 $3 $4 $5 2>&1) && echo ' '
+    branch_in=$(python parse_opts "branch_mode" $arg_in 2>&1) && echo ' '
   fi
-
   if [[ $bb_cpy == 1 ]] || [ $del_mode == 1 ] ; then
     run_mode=1
   fi
-
   if [ $env_mode == 1 ] || [ $tar_mode == 1 ] || [ $epk_mode == 1 ] || [ $pqc_mode == 1 ] || [ $pqdb_mode == 1 ] || [ $chip_mode == 1 ] || [ $branch_mode == 1 ];then
     run_mode=1
+  fi
+  if [ $multi_soc == 1 ]; then
+    run_mode=2
   fi
 
   if [[ $run_mode == '0' ]]; then
@@ -45,6 +46,15 @@ else
       source oe-init-build-env && echo ' '
       python build_exec -m build -d $debug_mode -b $bg_mode && echo ' '
     fi
+  elif [[ $run_mode == '2' ]]; then
+    for var in $(seq $(($#-1)))
+    do
+      var2=$((var+1))
+      python build_exec -m chip_mode%${!var2} -d $debug_mode && echo ' '
+      unset MACHINE MACHINES && echo ' '
+      source oe-init-build-env && echo ' '
+      python build_exec -m tar_mode -d $debug_mode -b $bg_mode && echo ' '
+    done
   else
     if [ $bb_cpy == 1 ]; then
       cp ../libpqdb/bb_file/pqdb.bb ./meta-lg-webos/meta-starfish/recipes-starfish/pqdb/
