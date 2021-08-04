@@ -19,11 +19,12 @@ input command on terminal as followed:
 > 
 >       #options     #description   
 >       dbg          debug mode (just print cmds)
->       epk          make epk image with previous options.
->       tar          make tar file with previous options.
+>       epk          make epk image with previous options
+>       tar          make tar file with previous options
 >       pqdb         compile libpqdb
 >       pqc          compile pqcontroller
->       env          settings for several build options.
+>       env          settings for several build options
+>       bg           execute in background
 >       bb           update the latest bb file (updated, 7/29)
 >       .chip        change chip option (updated, 7/29)
 >       @branch      change branch option (updated, 7/29)
