@@ -28,8 +28,10 @@ def proc_cmd(cmmd, debug, bg=0):
         print(cmmd)
     else:
         if bg=='1':
+            if not os.path.exists("./build_logs"):
+                os.mkdir("./build_logs")
             for idx in range(101):
-                if os.path.isfile('./build_logs/log_%d'%idx)==False:
+                if not os.path.isfile('./build_logs/log_%d'%idx):
                     cmd = "nohup " + cmmd + " 2>&1 > ./build_logs/log_%d &"%idx
                     subprocess.call(cmd, shell=True)
                     break
