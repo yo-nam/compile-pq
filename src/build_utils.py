@@ -39,6 +39,8 @@ def proc_cmd(cmmd, debug, bg=0):
                     print("Error : please, delite the log files in directory '/build_logs/'  ")
                     print("Error : command '%s' was ignored.")
                     break
+            print("Your background works were done.")
+            print("Build log was saved at " + pcolor.yellow + "build_logs/log_%d &"%idx + pcolor.clear)
         else:
             subprocess.call(cmmd, shell=True)
 
