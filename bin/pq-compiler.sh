@@ -57,8 +57,13 @@ else
     done
   else
     if [ $bb_cpy == 1 ]; then
-      cp ../libpqdb/bb_file/pqdb.bb ./meta-lg-webos/meta-starfish/recipes-starfish/pqdb/
-      echo 'bb_file has been updated'
+      [ ! -d "./meta-lg-webos/" ] && mkdir meta-lg-webos
+      [ ! -d "./meta-lg-webos/meta-starfish/" ] && mkdir meta-lg-webos/meta-starfish
+      [ ! -d "./meta-lg-webos/meta-starfish/recipes-starfish/" ] && mkdir meta-lg-webos/meta-starfish/recipes-starfish
+      [ ! -d "./meta-lg-webos/meta-starfish/recipes-starfish/pqdb/" ] && mkdir meta-lg-webos/meta-starfish/recipes-starfish/pqdb
+      [ ! -d "../libpqdb/" ] && echo "there is no \033[1;33mlibpqdb\033[0m module. please download libpqdb first."
+      [ -d "../libpqdb/" ] && cp ../libpqdb/bb_file/pqdb.bb ./meta-lg-webos/meta-starfish/recipes-starfish/pqdb/
+      [ -d "../libpqdb/" ] && echo 'bb_file has been updated'
     fi
     if [ $env_mode == 1 ] && ([ $chip_mode == 1 ] || [ $branch_mode == 1 ]);then
       echo "env_mode can't use with chip or branch selection."
